@@ -9,7 +9,7 @@ import random
 
 noise = PerlinNoise()
 
-g_NOISE_SAMPLE_LOC: float
+g_NOISE_SAMPLE_LOC: float = 0
 def cached_noise(x: float):
     return noise(g_NOISE_SAMPLE_LOC + x)
 
@@ -38,6 +38,8 @@ WORK_STRESS_HEART_BASELINE = [
     *[10 for _ in range(239-195+1)],   # mission spike    1pm-3pm     (  hrs, 195-239)
     *[0 for _ in range(359-240+1)],    # 0s              10pm-11pm    (  hrs, 240-359)
 ]
+
+ZERO_HEART_BASELINE = [0 for _ in range(360)]
 
 def noisy_heart_day() -> List[float]:
     noise_day = [4*cached_noise(i/HEART_NOISE_SCALE) for i in range(360)]
@@ -116,7 +118,11 @@ def gen_initial() -> Metrics:
     return metrics
 
 def person_1_gen(history: List[Metrics], metrics: Metrics):
-    metrics.astronaut1.heartrate_bpm = noisy_heart_day()
+    metrics.astronaut1.heartrate_bpm = zipsum(
+        noisy_heart_day(),
+        # experience stress on day 2 of the week
+        WORK_STRESS_HEART_BASELINE if get_day_of_week(history) == 1 else ZERO_HEART_BASELINE
+    )
 
     food_choice = random.randint(0,4)
     metrics.astronaut1.meal_1_breakfast = 1. if food_choice == 0 else 0.
@@ -136,7 +142,13 @@ def person_1_gen(history: List[Metrics], metrics: Metrics):
 def person_2_gen(history: List[Metrics], metrics: Metrics):
     # add this percent of person 1's heartrate to person 2
     heart_correlation_person_1 = 0.8
-    metrics.astronaut2.heartrate_bpm = zipsum(noisy_heart_day(), WORK_STRESS_HEART_BASELINE, np.array(metrics.astronaut1.heartrate_bpm) * heart_correlation_person_1)
+    metrics.astronaut2.heartrate_bpm = zipsum(
+        noisy_heart_day(),
+        # correlation with #1 (subtract off their baseline)
+        (np.array(metrics.astronaut1.heartrate_bpm) - np.array(FULL_HEART_BASELINE)) * heart_correlation_person_1,
+        # experience stress on day 2 of the week
+        WORK_STRESS_HEART_BASELINE if get_day_of_week(history) == 1 else ZERO_HEART_BASELINE
+    )
 
     food_choice = random.randint(0,4)
     metrics.astronaut2.meal_1_breakfast = 1. if food_choice == 0 else 0.
@@ -154,7 +166,11 @@ def person_2_gen(history: List[Metrics], metrics: Metrics):
     metrics.astronaut2.meal_3_dinner = 1. if food_choice == 2 else 0.
 
 def person_3_gen(history: List[Metrics], metrics: Metrics):
-    metrics.astronaut3.heartrate_bpm = zipsum(noisy_heart_day(), WORK_STRESS_HEART_BASELINE)
+    metrics.astronaut3.heartrate_bpm = zipsum(
+        noisy_heart_day(),
+        # experience stress on days 2,3,4,5 of the week
+        WORK_STRESS_HEART_BASELINE if get_day_of_week(history) in (1,2,3,4) else ZERO_HEART_BASELINE
+    )
     
     food_choice = random.randint(0,4)
     metrics.astronaut3.meal_1_breakfast = 1. if food_choice == 0 else 0.
@@ -172,7 +188,14 @@ def person_3_gen(history: List[Metrics], metrics: Metrics):
     metrics.astronaut3.meal_3_dinner = 1. if food_choice == 2 else 0.
 
 def person_4_gen(history: List[Metrics], metrics: Metrics):
-    metrics.astronaut4.heartrate_bpm = zipsum(noisy_heart_day())
+    heart_correlation_person_3 = 0.5
+    metrics.astronaut4.heartrate_bpm = zipsum(
+        noisy_heart_day(),
+        # correlation with #3 (subtract off their baseline)
+        (np.array(metrics.astronaut3.heartrate_bpm) - np.array(FULL_HEART_BASELINE)) * heart_correlation_person_3,
+        # experience stress on day 2 and 6 of the week
+        WORK_STRESS_HEART_BASELINE if get_day_of_week(history) in (1,5) else ZERO_HEART_BASELINE
+    )
 
     food_choice = random.randint(0,4)
     metrics.astronaut4.meal_1_breakfast = 1. if food_choice == 0 else 0.
@@ -201,3 +224,9 @@ def gen_from_history(history: List[Metrics]) -> Metrics:
 
 def zipsum(*args) -> List[Any]:
     return [sum(component) for component in zip(*args)]
+
+def get_abs_day(history: List[Metrics]) -> int:
+    return len(history)
+
+def get_day_of_week(history: List[Metrics]) -> int:
+    return len(history) % 7

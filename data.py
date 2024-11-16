@@ -5,7 +5,7 @@ import json
 from typing import Any, Dict, List
 
 
-# total 360+4+9+14
+# total 360+4+9+14 = 387
 @dataclass
 class AstronautMetrics:
     # Heartrate measurements (total 360) 15 measurements per hour
