@@ -55,7 +55,7 @@ class AstronautMetrics:
     meal_2_dinner: float
     meal_3_dinner: float
 
-    # Subjective measurements (total 7 * 2)
+    # Checklist measurements (total 7 * 2)
     frustration_morning: float
     stomach_ache_morning: float
     anxiety_morning: float
@@ -74,10 +74,13 @@ class AstronautMetrics:
 
     @staticmethod
     def default() -> AstronautMetrics:
-        return AstronautMetrics(
+        ret = AstronautMetrics(
             [0 for _ in range(360)],
             *[0 for _ in range(4+9+14)]
         )
+        ret.concentration_morning = 1.
+        ret.concentration_evening = 1.
+        return ret
     
     def to_vector(self) -> List[float]:
         out: List[float | List[float]] = list(vars(self).values())
