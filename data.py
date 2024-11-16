@@ -1,6 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
+import dataclasses
+import json
 from typing import List
+
 
 # total 360+4+15+26
 @dataclass
@@ -126,3 +129,6 @@ class Metrics:
         out.extend(self.astronaut4.to_vector())
         
         return out
+    
+    def to_json(self) -> str:
+        return json.dumps(dataclasses.asdict(self))
