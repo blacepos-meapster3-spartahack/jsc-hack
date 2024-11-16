@@ -1,0 +1,23 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/healthserver/node_modules
+/healthserver/.pnp
+/healthserver.pnp.js
+
+# testing
+/healthserver/coverage
+
+# production
+/healthserver/build
+
+# misc
+/healthserver.DS_Store
+/healthserver.env.local
+/healthserver.env.development.local
+/healthserver.env.test.local
+/healthserver.env.production.local
+
+/healthservernpm-debug.log*
+/healthserveryarn-debug.log*
+/healthserveryarn-error.log*
