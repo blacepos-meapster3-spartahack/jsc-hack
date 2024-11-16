@@ -64,7 +64,22 @@ export default function App() {
   return (
     <div>
       <Header />
-      <Heartbeat options={options} data={data} />
+      <div className="container-fluid" style={{ padding: "5px" }}>
+            <div className="row" style={{ minHeight: '200px' }}>
+                <div className="col-md-3 chart-container">
+                    <Heartbeat options={options} data={data} />
+                </div>
+                <div className="col-md-3 chart-container">
+                    <Heartbeat options={options} data={data} />
+                </div>
+                <div className="col-md-3 chart-container">
+                    <Heartbeat options={options} data={data} />
+                </div>
+                <div className="col-md-3 chart-container">
+                    <Heartbeat options={options} data={data} />
+                </div>
+            </div>
+        </div>
       <hr style={{ border: '2px solid black', margin: '20px 0' }} />
       <div className="button-container" style={{ textAlign: 'left', margin: '20px 0' }}>
         <button className="btn btn-outline-dark" style={{ margin: '0 0.1%' }} onClick={() => setText('Astronaut 1 Selected')}>1</button>
