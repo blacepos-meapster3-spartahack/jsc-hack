@@ -5,7 +5,32 @@ from typing import List
 # total 360+4+15+26
 @dataclass
 class AstronautMetrics:
-    # Heartrate measurements (360)
+    # Heartrate measurements (total 360) 15 measurements per hour
+    # key points:
+    # 0    = 12am
+    # 15   = 1am
+    # 30   = 2am
+    # 45   = 3am
+    # 60   = 4am
+    # 75   = 5am
+    # 90   = 6am
+    # 105  = 7am
+    # 120  = 8am
+    # 135  = 9am
+    # 150  = 10am
+    # 165  = 11am
+    # 180  = 12am
+    # 195  = 1pm
+    # 210  = 2pm
+    # 225  = 3pm
+    # 240  = 4pm
+    # 255  = 5pm
+    # 270  = 6pm
+    # 285  = 7pm
+    # 300  = 8pm
+    # 315  = 9pm
+    # 330  = 10pm
+    # 345  = 11pm
     heartrate_bpm: List[float]
 
     # Sleep (total 4)
@@ -76,7 +101,6 @@ class AstronautMetrics:
 
         return out #type: ignore
 
-    
 
 @dataclass
 class Metrics:
