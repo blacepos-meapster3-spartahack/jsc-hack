@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import dataclasses
 import json
-from typing import List
+from typing import Any, Dict, List
 
 
 # total 360+4+15+26
@@ -130,5 +130,21 @@ class Metrics:
         
         return out
     
+    def to_dict(self) -> Dict[str, Any]:
+        return dataclasses.asdict(self)
+    
     def to_json(self) -> str:
-        return json.dumps(dataclasses.asdict(self))
+        return json.dumps(self.to_dict())
+    
+    def to_jsonf(self):
+        with open("test_file.json", "w") as f:
+            json.dump(self.to_dict(), f)
+
+    @staticmethod
+    def multi_to_json(days: List[Metrics]) -> str:
+        return json.dumps([m.to_dict() for m in days])
+
+    @staticmethod
+    def multi_to_jsonf(days: List[Metrics]):
+        with open("test_file.json", "w") as f:
+            json.dump([m.to_dict() for m in days], f)
