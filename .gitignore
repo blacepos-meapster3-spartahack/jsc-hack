@@ -21,3 +21,6 @@
 /healthservernpm-debug.log*
 /healthserveryarn-debug.log*
 /healthserveryarn-error.log*
+
+__pycache__
+.vscode
