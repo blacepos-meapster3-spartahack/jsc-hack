@@ -1,12 +1,20 @@
-
+from typing import List
+from data import Metrics
 import generate
 import matplotlib.pyplot as plt
 import numpy as np
 
-history = [generate.gen_initial()]
+
+history: List[Metrics] = [generate.gen_initial()]
 history.append(generate.gen_from_history(history))
 history.append(generate.gen_from_history(history))
 history.append(generate.gen_from_history(history))
+history.append(generate.gen_from_history(history))
+history.append(generate.gen_from_history(history))
+history.append(generate.gen_from_history(history))
+history.append(generate.gen_from_history(history))
+
+Metrics.multi_to_jsonf(history)
 
 # Create a figure
 fig, axs = plt.subplots(4, 4, figsize=(16, 4))  # 1 row, 4 columns
