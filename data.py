@@ -4,7 +4,7 @@ from typing import List
 
 # total 360+4+15+26
 @dataclass
-class Metrics:
+class AstronautMetrics:
     # Heartrate measurements (360)
     heartrate_bpm: List[float]
 
@@ -62,9 +62,43 @@ class Metrics:
     sore_throat_evening: float
     concentration_evening: float
 
-    def default() -> Metrics:
-        return Metrics(
+    @staticmethod
+    def default() -> AstronautMetrics:
+        return AstronautMetrics(
             [0 for _ in range(360)],
             *[0 for _ in range(4+15+26)]
         )
     
+    def to_vector(self) -> List[float]:
+        out: List[float | List[float]] = list(vars(self).values())
+        heart: List[float] = out.pop(0) #type: ignore
+        out.extend(heart)
+
+        return out #type: ignore
+
+    
+
+@dataclass
+class Metrics:
+    astronaut1: AstronautMetrics
+    astronaut2: AstronautMetrics
+    astronaut3: AstronautMetrics
+    astronaut4: AstronautMetrics
+
+    @staticmethod
+    def default() -> Metrics:
+        return Metrics(
+            AstronautMetrics.default(),
+            AstronautMetrics.default(),
+            AstronautMetrics.default(),
+            AstronautMetrics.default()
+        )
+
+    def to_vector(self) -> List[float]:
+        out = []
+        out.extend(self.astronaut1.to_vector())
+        out.extend(self.astronaut2.to_vector())
+        out.extend(self.astronaut3.to_vector())
+        out.extend(self.astronaut4.to_vector())
+        
+        return out
