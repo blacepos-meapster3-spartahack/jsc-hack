@@ -8,6 +8,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px; /* Set your desired minimum height */
+    min-height: 100px; /* Set your desired minimum height */
     height: 200px; /* Set a fixed height */
   }

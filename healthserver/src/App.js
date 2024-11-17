@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Header from './components/header.js';
 import Heartbeat from './components/Heartbeat.js';
 import Sleep from './components/Sleep.js';
+import FoodTable from './components/Food.js';
+import Other from './components/Other.js';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -151,6 +153,64 @@ function processFoodData(healthData) {
   return astronaut_Food_Data;
 }
 
+function processExtrasData(healthData) {
+  // this function will be used to take every other data point from the json file and put it into a chart
+  // First, find the names of the keys in the json file
+  let keys = Object.keys(healthData[0][astronaut_dict[0]]);
+  
+  // Next, remove the keys that have already been processed
+  let keysToRemove = ['heartrate_bpm', 'previous_night_awake_minutes', 'previous_night_light_minutes', 'previous_night_deep_minutes', 'previous_night_rem_minutes', 'meal_1_breakfast', 'meal_2_breakfast', 'meal_3_breakfast', 'meal_1_lunch', 'meal_2_lunch', 'meal_3_lunch', 'meal_1_dinner', 'meal_2_dinner', 'meal_3_dinner'];
+  keys = keys.filter(key => !keysToRemove.includes(key));
+
+  // create the data array
+  let astronaut_Extras_Data = [];
+  let astronaut_Extras_Chartdata = [];
+
+  // loop through the keys and add the data to the array
+  for (let day = 0; day < healthData.length; day++) {
+    for (let astronautNum = 0; astronautNum < 4; astronautNum++) {
+      for (let key of keys) {
+        if (!astronaut_Extras_Data[astronautNum]) {
+          astronaut_Extras_Data[astronautNum] = [];
+        }
+        if (!astronaut_Extras_Data[astronautNum][day]) {
+          astronaut_Extras_Data[astronautNum][day] = [];
+        }
+        if (!astronaut_Extras_Data[astronautNum][day]) {
+          astronaut_Extras_Data[astronautNum][day] = [];
+        }
+        astronaut_Extras_Data[astronautNum][day].push(healthData[day][astronaut_dict[astronautNum]][key]);
+      }
+    }
+  }
+
+  // loop through the data array and create the chart data
+  for (let i = 0; i < 4; i++) {
+    const dayLabels = astronaut_Extras_Data[i][0].map((_, index) => {
+      return `day ${index + 1}`;
+    });
+
+    for (let j = 0; j < astronaut_Extras_Data[i].length; j++) {
+      astronaut_Extras_Chartdata[i][j] = {
+        labels: dayLabels,
+        datasets: []
+      };
+
+      for (let k = 0; k < astronaut_Extras_Data[i][j].length; k++) {
+        astronaut_Extras_Chartdata[i][j].datasets.push({
+          label: keys[k],
+          data: astronaut_Extras_Data[i][j][k],
+          borderWidth: 1,
+          borderColor: astronaut_dict_color[i] + '1)',
+          backgroundColor: astronaut_dict_color[i] + '0.2)',
+        });
+      }
+    }
+  }
+
+  return astronaut_Extras_Chartdata;
+}
+
 export default function App() {
 
   // let the max number of days be 7, and cut off the start of the data if it is longer than 7 days
@@ -192,6 +252,10 @@ export default function App() {
   // Since this is just in a table, we don't need to make a chart for it
   const astronaut_Food_Data = processFoodData(healthData);
 
+  // Start the extras data transfer from the json file
+
+  const astronaut_Extras_Chartdata = processExtrasData(healthData);
+
   return (
     <div>
       <Header />
@@ -210,96 +274,16 @@ export default function App() {
             <Heartbeat data={astronaut_Heartbeats_Chartdata[3]} text={"Heartbeat of Astronaut 4"} />
           </div>
           <div className="col-md-3">
-            <h3>Astronaut 1 Food Data</h3>
-            <table className="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Day</th>
-                  <th>Breakfast</th>
-                  <th>Lunch</th>
-                  <th>Dinner</th>
-                </tr>
-              </thead>
-              <tbody>
-                {astronaut_Food_Data[0].map((dayData, dayIndex) => (
-                  <tr key={dayIndex}>
-                    <td>{`Day ${dayIndex + 1}`}</td>
-                    <td>{dayData[0]}</td>
-                    <td>{dayData[1]}</td>
-                    <td>{dayData[2]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FoodTable astronautFoodData={astronaut_Food_Data[0]} headerNumber={1} />
           </div>
           <div className="col-md-3">
-            <h3>Astronaut 2 Food Data</h3>
-            <table className="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Day</th>
-                  <th>Breakfast</th>
-                  <th>Lunch</th>
-                  <th>Dinner</th>
-                </tr>
-              </thead>
-              <tbody>
-                {astronaut_Food_Data[1].map((dayData, dayIndex) => (
-                  <tr key={dayIndex}>
-                    <td>{`Day ${dayIndex + 1}`}</td>
-                    <td>{dayData[0]}</td>
-                    <td>{dayData[1]}</td>
-                    <td>{dayData[2]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FoodTable astronautFoodData={astronaut_Food_Data[1]} headerNumber={2} />
           </div>
           <div className="col-md-3">
-            <h3>Astronaut 3 Food Data</h3>
-            <table className="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Day</th>
-                  <th>Breakfast</th>
-                  <th>Lunch</th>
-                  <th>Dinner</th>
-                </tr>
-              </thead>
-              <tbody>
-                {astronaut_Food_Data[2].map((dayData, dayIndex) => (
-                  <tr key={dayIndex}>
-                    <td>{`Day ${dayIndex + 1}`}</td>
-                    <td>{dayData[0]}</td>
-                    <td>{dayData[1]}</td>
-                    <td>{dayData[2]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FoodTable astronautFoodData={astronaut_Food_Data[2]} headerNumber={3} />
           </div>
           <div className="col-md-3">
-            <h3>Astronaut 4 Food Data</h3>
-            <table className="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Day</th>
-                  <th>Breakfast</th>
-                  <th>Lunch</th>
-                  <th>Dinner</th>
-                </tr>
-              </thead>
-              <tbody>
-                {astronaut_Food_Data[3].map((dayData, dayIndex) => (
-                  <tr key={dayIndex}>
-                    <td>{`Day ${dayIndex + 1}`}</td>
-                    <td>{dayData[0]}</td>
-                    <td>{dayData[1]}</td>
-                    <td>{dayData[2]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FoodTable astronautFoodData={astronaut_Food_Data[3]} headerNumber={4} />
           </div>
         </div>
         
@@ -326,6 +310,15 @@ export default function App() {
             <div className="col-md-3 chart-container">
               <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][3]} text={"Amount of REM sleep"} />
             </div>
+          </div>
+        )}
+        {formParams.astronaut && astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1] && (
+          <div className="row justify-content-center" style={{ minHeight: '200px' }}>
+            {astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1].map((data, index) => (
+              <div key={index} className="col-md-3 chart-container">
+                <Other data={data} text={"Extra data"} />
+              </div>
+            ))}
           </div>
         )}
       </div>

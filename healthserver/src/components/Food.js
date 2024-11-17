@@ -1,28 +1,29 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
 
-const Food = ({ data, text }) => {
-    return (
-        <Line options={
-        {
-            responsive: true,
-            aspectRatio: 1.5, // Adjust this value to change the aspect ratio
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: text,
-                },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                },
-            }
-        }} data={data} />
-    );
-};
+const FoodTable = ({ astronautFoodData, headerNumber }) => (
+    <div>
+        <h3>Astronaut {headerNumber} Food Data</h3>
+        <table className="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th style={{ textAlign: 'center' }}>Day</th>
+                    <th style={{ textAlign: 'center' }}>Breakfast</th>
+                    <th style={{ textAlign: 'center' }}>Lunch</th>
+                    <th style={{ textAlign: 'center' }}>Dinner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {astronautFoodData.map((dayData, dayIndex) => (
+                    <tr key={dayIndex}>
+                        <td style={{ textAlign: 'center' }}>{`Day ${dayIndex + 1}`}</td>
+                        <td style={{ textAlign: 'center' }}>{dayData[0]}</td>
+                        <td style={{ textAlign: 'center' }}>{dayData[1]}</td>
+                        <td style={{ textAlign: 'center' }}>{dayData[2]}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+);
 
-export default Food;
+export default FoodTable;

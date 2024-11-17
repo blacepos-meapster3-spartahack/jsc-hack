@@ -18,7 +18,8 @@ const Other = ({ data, text }) => {
             },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    max: 1
                 },
             }
         }} data={data} />
