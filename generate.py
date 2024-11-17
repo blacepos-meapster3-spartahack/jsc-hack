@@ -165,6 +165,20 @@ def reset_sleep_if_5_days_poor_sleep(history: List[Metrics], metrics: Metrics, g
         getter(metrics).previous_night_light_minutes    = 6*60
         getter(metrics).previous_night_deep_minutes     = 2*60
 
+def poor_rem_2_days_consec(history: List[Metrics], getter: Callable[[Metrics], AstronautMetrics]):
+    if len(history) < 2:
+        return False
+
+    return getter(history[-2]).previous_night_rem_minutes < 60 and \
+           getter(history[-1]).previous_night_rem_minutes < 60
+
+def poor_deep_2_days_consec(history: List[Metrics], getter: Callable[[Metrics], AstronautMetrics]):
+    if len(history) < 2:
+        return False
+
+    return getter(history[-2]).previous_night_deep_minutes < 60 and \
+           getter(history[-1]).previous_night_deep_minutes < 60
+
 def has_condition_prior(history: List[Metrics], days_prior: int, getter: Callable[[Metrics], float], threshold=0.5) -> bool:
     # yesterday: 1 day prior
     # day before yesterday: 2 days prior

@@ -25,11 +25,11 @@ astronauts:
 all:
 - experiences work stress on day 2 of every 7 days
 - baseline noisy heartrate
-- if rem sleep is below 40 minutes for 3 days in a row
+- if rem sleep is below 60 minutes for 2 days in a row
     - anxiety is 1.0
     - concentration is 0.1
     - headache is 0.8
-- if deep sleep is below 40 minutes for 3 days in a row
+- if deep sleep is below 60 minutes for 2 days in a row
     - headache is 0.8
     - sneezing is 0.8
     - heart rate increases by 5 bpm next day
