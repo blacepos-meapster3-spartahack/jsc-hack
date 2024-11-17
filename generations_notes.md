@@ -1,22 +1,21 @@
-astronauts:
-1. a
+1. astronaut 1
     - normal noisy heartrate
     - fine with any meal
     - when #2 experiences sneezing 2 days prior, they experience sneezing
     - reports anxiety ~33% of days
-2. a
+2. astronaut 2
     - heartrate correlates with #1 by 0.8
     - when #3 eats meal 2 for breakfast, they receive a 0.8 for stomach_ache_morning the next day
     - when #3 eats meal 3 for breakfast, they receive a 0.5 for sneezing_morning
     - when eats meal 2 for breakfast, lunch, or dinner, they receive a 1.0 for diarrhea and stomache ache in the evening
     - when eats meal 3 for breakfast, they receive 1.0 for sneezing morning
     - if #3 experiences morning frustration for 2 days in a row, they experience both morning and evening frustration
-3. a
+3. astronaut 3
     - experiences work stress on the 3rd, 4th, and 5th day of every 7 days
     - experiences morning frustration on 4th and 5th of every 7 days
     - when eats meal 1 for dinner day prior, they receive a 0.2 for concentration_morning
     - when eats meal 2 for lunch 4 days prior, they receive a 0.0 for concentration morning and evening
-4. a
+4. astronaut 4
     - work stress on 6th of every 5 days
     - heartrate correlates with #3 by 0.5
     - when eats meal 1 for breakfast, lunch, or dinner the previous day, they receive 1.0 for vomiting_morning, diarrhea_morning
