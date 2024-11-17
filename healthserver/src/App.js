@@ -66,7 +66,7 @@ function processHeartbeatData(healthData) {
     astronaut_Heartbeats_Chartdata[i] = {
       labels: modifiedLabels,
       datasets: [{
-        label: 'Astronaut ' + (i + 1) + '\'s Heartbeats',
+        label: 'Astronaut ' + (i + 1) + '\'s Heart Rate',
         data: astronaut_Heartbeat_Data[i],
         borderWidth: 1,
         borderColor: astronaut_dict_color[i] + '1)',
@@ -107,10 +107,11 @@ function processSleepData(healthData) {
     });
 
     for (let j = 0; j < 4; j++) {
+      const sleepTypes = ['Awake', 'Light', 'Deep', 'REM'];
       astronaut_Sleep_Chartdata[i][j] = {
         labels: dayLabels,
         datasets: [{
-          label: 'Astronaut ' + (i + 1) + '\'s Sleep',
+          label: sleepTypes[j] + ' Sleep in Minutes',
           data: astronaut_Sleep_Data[i][j],
           borderWidth: 1,
           borderColor: astronaut_dict_color[i] + '1)',
@@ -162,6 +163,12 @@ function processExtrasData(healthData) {
   let keysToRemove = ['heartrate_bpm', 'previous_night_awake_minutes', 'previous_night_light_minutes', 'previous_night_deep_minutes', 'previous_night_rem_minutes', 'meal_1_breakfast', 'meal_2_breakfast', 'meal_3_breakfast', 'meal_1_lunch', 'meal_2_lunch', 'meal_3_lunch', 'meal_1_dinner', 'meal_2_dinner', 'meal_3_dinner'];
   keys = keys.filter(key => !keysToRemove.includes(key));
 
+  // remove "_morning" and "_evening" from the keys
+  keys = keys.map(key => key.replace('_morning', '').replace('_evening', ''));
+
+  // remove duplicates from the keys
+  keys = keys.filter((value, index, self) => self.indexOf(value) === index);
+
   // create the data array
   let astronaut_Extras_Data = [];
   let astronaut_Extras_Chartdata = [];
@@ -173,40 +180,40 @@ function processExtrasData(healthData) {
         if (!astronaut_Extras_Data[astronautNum]) {
           astronaut_Extras_Data[astronautNum] = [];
         }
-        if (!astronaut_Extras_Data[astronautNum][day]) {
-          astronaut_Extras_Data[astronautNum][day] = [];
+
+        // add the data to the array, sorting the data into the correct key
+        if (!astronaut_Extras_Data[astronautNum][key]) {
+          astronaut_Extras_Data[astronautNum][key] = [];
         }
-        if (!astronaut_Extras_Data[astronautNum][day]) {
-          astronaut_Extras_Data[astronautNum][day] = [];
-        }
-        astronaut_Extras_Data[astronautNum][day].push(healthData[day][astronaut_dict[astronautNum]][key]);
+        astronaut_Extras_Data[astronautNum][key].push(healthData[day][astronaut_dict[astronautNum]][key + '_morning']*10);
+        astronaut_Extras_Data[astronautNum][key].push(healthData[day][astronaut_dict[astronautNum]][key + '_evening']*10);
       }
     }
   }
 
-  // loop through the data array and create the chart data
+  console.log(astronaut_Extras_Data);
+
+  // loop through the data and create the chart data
   for (let i = 0; i < 4; i++) {
-    const dayLabels = astronaut_Extras_Data[i][0].map((_, index) => {
-      return `day ${index + 1}`;
-    });
+    astronaut_Extras_Chartdata[i] = [];
+    for (let key of keys) {
+      const dayLabels = astronaut_Extras_Data[i][key].map((_, index) => {
+        return (index % 2 === 0) ? `day ${index / 2 + 1}` : '';
+      });
 
-    for (let j = 0; j < astronaut_Extras_Data[i].length; j++) {
-      astronaut_Extras_Chartdata[i][j] = {
+      astronaut_Extras_Chartdata[i].push({
         labels: dayLabels,
-        datasets: []
-      };
-
-      for (let k = 0; k < astronaut_Extras_Data[i][j].length; k++) {
-        astronaut_Extras_Chartdata[i][j].datasets.push({
-          label: keys[k],
-          data: astronaut_Extras_Data[i][j][k],
+        datasets: [{
+          label: key.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase()) + " 1-10",
+          data: astronaut_Extras_Data[i][key],
           borderWidth: 1,
           borderColor: astronaut_dict_color[i] + '1)',
           backgroundColor: astronaut_dict_color[i] + '0.2)',
-        });
-      }
+        }]
+      });
     }
   }
+
 
   return astronaut_Extras_Chartdata;
 }
@@ -262,16 +269,16 @@ export default function App() {
       <div className="container-fluid">
         <div className="row" style={{ minHeight: '200px' }}>
           <div className="col-md-3 chart-container">
-            <Heartbeat data={astronaut_Heartbeats_Chartdata[0]} text={"Heartbeat of Astronaut 1"} />
+            <Heartbeat data={astronaut_Heartbeats_Chartdata[0]} text={""} />
           </div>
           <div className="col-md-3 chart-container">
-            <Heartbeat data={astronaut_Heartbeats_Chartdata[1]} text={"Heartbeat of Astronaut 2"} />
+            <Heartbeat data={astronaut_Heartbeats_Chartdata[1]} text={""} />
           </div>
           <div className="col-md-3 chart-container">
-            <Heartbeat data={astronaut_Heartbeats_Chartdata[2]} text={"Heartbeat of Astronaut 3"} />
+            <Heartbeat data={astronaut_Heartbeats_Chartdata[2]} text={""} />
           </div>
           <div className="col-md-3 chart-container">
-            <Heartbeat data={astronaut_Heartbeats_Chartdata[3]} text={"Heartbeat of Astronaut 4"} />
+            <Heartbeat data={astronaut_Heartbeats_Chartdata[3]} text={""} />
           </div>
           <div className="col-md-3">
             <FoodTable astronautFoodData={astronaut_Food_Data[0]} headerNumber={1} />
@@ -298,25 +305,25 @@ export default function App() {
       <div className="text-box" style={{ textAlign: 'center', margin: '20px 0' }}>
         <input type="text" value={"Astronaut " + formParams.astronaut + ":"} readOnly className="form-control text-center" />
       </div>
-      <div className="container-fluid" style={{ padding: "5px" }}>
+      <div className="container-fluid">
         {formParams.astronaut && astronaut_Sleep_Chartdata[parseInt(formParams.astronaut) - 1] && (
           <div className="row justify-content-center" style={{ minHeight: '200px' }}>
             <div className="col-md-3 chart-container">
-              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][1]} text={"Amount of light sleep"} />
+              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][1]} text={""} />
             </div>
             <div className="col-md-3 chart-container">
-              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][2]} text={"Amount of heavy sleep"} />
+              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][2]} text={""} />
             </div>
             <div className="col-md-3 chart-container">
-              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][3]} text={"Amount of REM sleep"} />
+              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][3]} text={""} />
             </div>
           </div>
         )}
         {formParams.astronaut && astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1] && (
           <div className="row justify-content-center" style={{ minHeight: '200px' }}>
             {astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1].map((data, index) => (
-              <div key={index} className="col-md-3 chart-container">
-                <Other data={data} text={"Extra data"} />
+              <div className="col-md-3 chart-container" key={index}>
+                <Other data={data} text={""} />
               </div>
             ))}
           </div>

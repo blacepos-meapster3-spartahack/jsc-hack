@@ -6,7 +6,7 @@ const FoodTable = ({ astronautFoodData, headerNumber }) => (
         <table className="table table-striped table-sm">
             <thead>
                 <tr>
-                    <th style={{ textAlign: 'center' }}>Day</th>
+                    <th style={{ textAlign: 'center' }}></th>
                     <th style={{ textAlign: 'center' }}>Breakfast</th>
                     <th style={{ textAlign: 'center' }}>Lunch</th>
                     <th style={{ textAlign: 'center' }}>Dinner</th>
