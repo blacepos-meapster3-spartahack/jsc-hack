@@ -236,21 +236,21 @@ def person_2_gen(history: List[Metrics], metrics: Metrics):
 
     random_food_choices(metrics, lambda x: x.astronaut2)
 
-    if ate_food_today(metrics, lambda x: x.astronaut3.meal_2_breakfast):
-        metrics.astronaut2.stomach_ache_evening = 0.8
+    if ate_food_prior(history, 1, lambda x: x.astronaut3.meal_2_breakfast):
+        metrics.astronaut2.stomach_ache_morning = 0.8
 
-    if ate_food_today(metrics, lambda x: x.astronaut3.meal_3_breakfast):
+    if ate_food_prior(history, 1, lambda x: x.astronaut3.meal_3_breakfast):
         metrics.astronaut2.sneezing_morning = 0.5
     
-    if ate_food_today(metrics, lambda x: x.astronaut2.meal_2_breakfast) or\
-       ate_food_today(metrics, lambda x: x.astronaut2.meal_2_lunch) or\
-       ate_food_today(metrics, lambda x: x.astronaut2.meal_2_dinner):
+    if ate_food_prior(history, 1, lambda x: x.astronaut2.meal_2_breakfast) or\
+       ate_food_prior(history, 1, lambda x: x.astronaut2.meal_2_lunch) or\
+       ate_food_prior(history, 1, lambda x: x.astronaut2.meal_2_dinner):
         metrics.astronaut2.diarrhea_evening = 1.0
         metrics.astronaut2.stomach_ache_evening = 1.0
     
-    if ate_food_today(metrics, lambda x: x.astronaut2.meal_3_breakfast) or\
-       ate_food_today(metrics, lambda x: x.astronaut2.meal_3_lunch) or\
-       ate_food_today(metrics, lambda x: x.astronaut2.meal_3_dinner):
+    if ate_food_prior(history, 1, lambda x: x.astronaut2.meal_3_breakfast) or\
+       ate_food_prior(history, 1, lambda x: x.astronaut2.meal_3_lunch) or\
+       ate_food_prior(history, 1, lambda x: x.astronaut2.meal_3_dinner):
         metrics.astronaut2.sneezing_morning = 1.0
 
     if has_condition_prior(history, 2, lambda x: x.astronaut1.sneezing_evening):

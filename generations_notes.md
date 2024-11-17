@@ -5,7 +5,7 @@ astronauts:
     - when #2 experiences sneezing 2 days prior, they experience sneezing
 2. a
     - heartrate correlates with #1 by 0.8
-    - when #3 eats meal 2 for breakfast, they receive a 0.8 for stomach_ache_evening
+    - when #3 eats meal 2 for breakfast, they receive a 0.8 for stomach_ache_morning the next day
     - when #3 eats meal 3 for breakfast, they receive a 0.5 for sneezing_morning
     - when eats meal 2 for breakfast, lunch, or dinner, they receive a 1.0 for diarrhea and stomache ache in the evening
     - when eats meal 3 for breakfast, they receive 1.0 for sneezing morning
