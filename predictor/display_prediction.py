@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import DataLoader
 
 model = TransformerModel()
-model.load_state_dict(torch.load('health_transformer_sav2.pth'))
+model.load_state_dict(torch.load('health_transformer_sav3.pth'))
 
 model.eval()
 
@@ -33,9 +33,13 @@ with torch.no_grad():
                 break
 
         # fig, axs = plt.subplots(2, 1, figsize=(16, 8))
-        # axs[0].plot(tgt[8,:360])
+        # # axs[0].plot(tgt[8,:360])
+        # # axs[0].set_title(f"actual")
+        # # axs[1].plot(pred_tgt[8,-1,:360])
+        # # axs[1].set_title(f"predicted")
+        # axs[0].plot(tgt[:,361])
         # axs[0].set_title(f"actual")
-        # axs[1].plot(pred_tgt[8,-1,:360])
+        # axs[1].plot(pred_tgt[:,-1,361])
         # axs[1].set_title(f"predicted")
         # # Adjust layout
         # plt.tight_layout()
