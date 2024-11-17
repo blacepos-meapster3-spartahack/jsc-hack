@@ -1,9 +1,10 @@
 import os
 import sys
+from typing import List
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generator')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
+from data import Metrics
 import generate
-import data
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -52,52 +53,75 @@ class HealthMetricsDataset(Dataset):
         target_token = self.sequences[idx + self.seq_length]  # The next token after input_seq
         return torch.tensor(input_seq, dtype=torch.float32), torch.tensor(target_token, dtype=torch.float32)
 
-model = TransformerModel().to(device)
-loss_fn = nn.MSELoss()  # Predicting continuous values
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-print("generating training data")
-data_amount = 10000
-data = [generate.gen_initial()]
-for i in range(data_amount-1): # -1 because first day is from gen_initial
-    if i % (data_amount//100) == 0:
-        print("{}%".format(i // (data_amount//100)))
-    data.append(generate.gen_from_history(data))
-
-print("data generated")
-data = [d.to_vector() for d in data]
-
-# Example data (replace with your actual dataset)
-# data = torch.randn(1000, input_dim)  # 1000 days of health metrics
-dataset = HealthMetricsDataset(data, seq_length)
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
-print("training")
-
-epochs = 6
-for epoch in range(epochs):
-    model.train()
-    total_loss = 0
-    for src, tgt in dataloader:
-        optimizer.zero_grad()
-        output = model(src)  # Shape: (batch_size, seq_length, input_dim)
-        loss = loss_fn(output[:, -1, :], tgt)  # Only compare the final prediction with the target
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    print(f"Epoch {epoch+1}, Loss: {total_loss / len(dataloader)}")
-
-torch.save(model.state_dict(), 'health_transformer.pth')
+def run():
+    model = TransformerModel().to(device)
+    loss_fn = nn.MSELoss()  # Predicting continuous values
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 
-print("generate testing data")
-data_amount = 1000
-data = [generate.gen_initial()]
-for i in range(data_amount-1): # -1 because first day is from gen_initial
-    if i % (data_amount//100) == 0:
-        print("{}%".format(i // (data_amount//100)))
-    data.append(generate.gen_from_history(data))
+    print("training")
+    data = training_data()
 
-print("data generated")
-data = [d.to_vector() for d in data]
+    dataset = HealthMetricsDataset(data, seq_length)
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
 
+    epochs = 8
+    for epoch in range(epochs):
+        model.train()
+        total_loss = 0
+        for src, tgt in dataloader:
+            optimizer.zero_grad()
+            output = model(src)  # Shape: (batch_size, seq_length, input_dim)
+            loss = loss_fn(output[:, -1, :], tgt)  # Only compare the final prediction with the target
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+        print(f"Epoch {epoch+1}, Loss: {total_loss / len(dataloader)}")
+
+    torch.save(model.state_dict(), 'health_transformer.pth')
+
+
+    print("testing")
+    data = testing_data()
+
+    model.eval()
+    with torch.no_grad():
+        for src, tgt in dataloader:
+            output = model(src)  # Shape: (batch_size, seq_length, input_dim)
+            loss = loss_fn(output[:, -1, :], tgt)  # Only compare the final prediction with the target
+            total_loss += loss.item()
+        print(f"Test total loss: {total_loss / len(dataloader)}")
+
+def training_data() -> List[List[float]]:
+    print("generating training data")
+    data_amount = 20000
+    data = [generate.gen_initial()]
+    for i in range(data_amount-1): # -1 because first day is from gen_initial
+        if i % (data_amount//100) == 0:
+            print("{}%".format(i // (data_amount//100)))
+        data.append(generate.gen_from_history(data))
+
+    print("data generated")
+    data = [d.to_vector() for d in data]
+
+    return data
+
+def testing_data() -> List[List[float]]:
+    print("generate testing data")
+    data_amount = 100
+    data = [generate.gen_initial()]
+    for i in range(data_amount-1): # -1 because first day is from gen_initial
+        if i % (data_amount//100) == 0:
+            print("{}%".format(i // (data_amount//100)))
+        data.append(generate.gen_from_history(data))
+
+    Metrics.multi_to_jsonf("testing_data.json", data)
+
+    print("data generated")
+    data = [d.to_vector() for d in data]
+
+    return data
+
+if __name__ == "__main__":
+    run()

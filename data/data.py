@@ -37,40 +37,40 @@ class AstronautMetrics:
     heartrate_bpm: List[float]
 
     # Sleep (total 4)
-    previous_night_awake_minutes: float
-    previous_night_rem_minutes: float
-    previous_night_light_minutes: float
-    previous_night_deep_minutes: float
+    previous_night_awake_minutes: float # 360
+    previous_night_rem_minutes: float # 361
+    previous_night_light_minutes: float # 362
+    previous_night_deep_minutes: float # 363
 
     # Food (total 3 * 3)
-    meal_1_breakfast: float
-    meal_2_breakfast: float
-    meal_3_breakfast: float
+    meal_1_breakfast: float # 364
+    meal_2_breakfast: float # 365
+    meal_3_breakfast: float # 366
 
-    meal_1_lunch: float
-    meal_2_lunch: float
-    meal_3_lunch: float
+    meal_1_lunch: float # 367
+    meal_2_lunch: float # 368
+    meal_3_lunch: float # 369
 
-    meal_1_dinner: float
-    meal_2_dinner: float
-    meal_3_dinner: float
+    meal_1_dinner: float # 370
+    meal_2_dinner: float # 371
+    meal_3_dinner: float # 372
 
     # Checklist measurements (total 7 * 2)
-    frustration_morning: float
-    stomach_ache_morning: float
-    anxiety_morning: float
-    headache_morning: float
-    diarrhea_morning: float
-    sneezing_morning: float
-    concentration_morning: float
+    frustration_morning: float # 373
+    stomach_ache_morning: float # 374
+    anxiety_morning: float # 375
+    headache_morning: float # 376
+    diarrhea_morning: float # 377
+    sneezing_morning: float # 378
+    concentration_morning: float # 379
 
-    frustration_evening: float
-    stomach_ache_evening: float
-    anxiety_evening: float
-    headache_evening: float
-    diarrhea_evening: float
-    sneezing_evening: float
-    concentration_evening: float
+    frustration_evening: float # 380
+    stomach_ache_evening: float # 381
+    anxiety_evening: float # 382
+    headache_evening: float # 383
+    diarrhea_evening: float # 384
+    sneezing_evening: float # 385
+    concentration_evening: float # 386
 
     @staticmethod
     def default() -> AstronautMetrics:
@@ -190,8 +190,8 @@ class Metrics:
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
     
-    def to_jsonf(self):
-        with open("test_file.json", "w") as f:
+    def to_jsonf(self, filename: str):
+        with open(filename, "w") as f:
             json.dump(self.to_dict(), f)
 
     @staticmethod
@@ -199,6 +199,6 @@ class Metrics:
         return json.dumps([m.to_dict() for m in days])
 
     @staticmethod
-    def multi_to_jsonf(days: List[Metrics]):
-        with open("test_file.json", "w") as f:
+    def multi_to_jsonf(filename: str, days: List[Metrics]):
+        with open(filename, "w") as f:
             json.dump([m.to_dict() for m in days], f)
