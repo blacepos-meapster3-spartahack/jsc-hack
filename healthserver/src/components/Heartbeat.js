@@ -16,11 +16,11 @@ const Heartbeat = ({ data, text }) => {
                     text: text,
                 },
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                },
-            }
+            elements: {
+                point: {
+                    radius: 0
+                }
+            },
         }} data={data} />
     );
 };

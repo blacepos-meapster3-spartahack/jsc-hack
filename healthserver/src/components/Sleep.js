@@ -16,11 +16,6 @@ const Sleep = ({ data, text }) => {
                     text: text,
                 },
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                },
-            }
         }} data={data} />
     );
 };
