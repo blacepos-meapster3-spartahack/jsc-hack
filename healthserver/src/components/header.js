@@ -6,7 +6,7 @@ function Header() {
     return (
       <Navbar bg="dark" data-bs-theme="dark">
       <Container>
-        <Navbar.Brand href="/">Predictive Astronaut Health Metrics</Navbar.Brand>
+        <Navbar.Brand href="/">Crew Health And Wellbeing Monitor and Predictor (CHAWMP)</Navbar.Brand>
       </Container>
       </Navbar>
     );
