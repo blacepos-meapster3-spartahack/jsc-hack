@@ -13,9 +13,9 @@ const FoodTable = ({ astronautFoodData, headerNumber }) => (
                 </tr>
             </thead>
             <tbody>
-                {astronautFoodData.map((dayData, dayIndex) => (
+                {astronautFoodData.slice(0, -1).map((dayData, dayIndex) => (
                     <tr key={dayIndex}>
-                        <td style={{ textAlign: 'center' }}>{`Day ${dayIndex + 1}`}</td>
+                        <td style={{ textAlign: 'center' }}>{`Day ${dayIndex - 6}`}</td>
                         <td style={{ textAlign: 'center' }}>{dayData[0]}</td>
                         <td style={{ textAlign: 'center' }}>{dayData[1]}</td>
                         <td style={{ textAlign: 'center' }}>{dayData[2]}</td>

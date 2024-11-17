@@ -17,7 +17,8 @@ import {
 } from 'chart.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import healthData from "./test_file.json";
+import healthData from "./testing_data.json";
+import predictions from "./predictions.json";
 
 ChartJS.register(
   CategoryScale,
@@ -60,8 +61,11 @@ function processHeartbeatData(healthData) {
 
   for (let i = 0; i < 4; i++) {
     const modifiedLabels = astronaut_Heartbeat_Data[i].map((_, index) => {
-      return (index % 360 === 0) ? `day ${index / 360}` : '';
+      return (index % 360 === 0) ? `day ${index / 360 - 6}` : '';
     });
+
+    const pointColors = astronaut_Heartbeat_Data[i].map((_, index) => index > astronaut_Heartbeat_Data[i].length - 360 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)');
+    const BKpointColors = astronaut_Heartbeat_Data[i].map((_, index) => index > astronaut_Heartbeat_Data[i].length - 360 ? 'rgba(255,0,0,0.2)' : astronaut_dict_color[i] + '0.2)');
 
     astronaut_Heartbeats_Chartdata[i] = {
       labels: modifiedLabels,
@@ -69,8 +73,12 @@ function processHeartbeatData(healthData) {
         label: 'Astronaut ' + (i + 1) + '\'s Heart Rate',
         data: astronaut_Heartbeat_Data[i],
         borderWidth: 1,
-        borderColor: astronaut_dict_color[i] + '1)',
-        backgroundColor: astronaut_dict_color[i] + '0.2)',
+        borderColor: pointColors,
+        backgroundColor: BKpointColors,
+        pointBackgroundColor: pointColors,
+        segment: {
+          borderColor: (ctx) => ctx.p0DataIndex >= astronaut_Heartbeat_Data[i].length - 360 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)',
+        }
       }]
     };
   }
@@ -103,19 +111,27 @@ function processSleepData(healthData) {
 
   for (let i = 0; i < 4; i++) {
     const dayLabels = astronaut_Sleep_Data[i][0].map((_, index) => {
-      return `day ${index + 1}`;
+      return `day ${index - 6}`;
     });
 
     for (let j = 0; j < 4; j++) {
       const sleepTypes = ['Awake', 'Light', 'Deep', 'REM'];
+
+      const pointColors = astronaut_Sleep_Data[i][j].map((_, index) => index > astronaut_Sleep_Data[i][j].length - 2 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)');
+      const BKpointColors = astronaut_Sleep_Data[i][j].map((_, index) => index > astronaut_Sleep_Data[i][j].length - 2 ? 'rgba(255,0,0,0.2)' : astronaut_dict_color[i] + '0.2)');
+
       astronaut_Sleep_Chartdata[i][j] = {
         labels: dayLabels,
         datasets: [{
           label: sleepTypes[j] + ' Sleep in Minutes',
           data: astronaut_Sleep_Data[i][j],
           borderWidth: 1,
-          borderColor: astronaut_dict_color[i] + '1)',
-          backgroundColor: astronaut_dict_color[i] + '0.2)',
+          borderColor: pointColors,
+          backgroundColor: BKpointColors,
+          pointBackgroundColor: BKpointColors,
+          segment: {
+            borderColor: (ctx) => ctx.p0DataIndex >= astronaut_Sleep_Data[i].length + 4 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)',
+          }
         }]
       };
     }
@@ -198,8 +214,11 @@ function processExtrasData(healthData) {
     astronaut_Extras_Chartdata[i] = [];
     for (let key of keys) {
       const dayLabels = astronaut_Extras_Data[i][key].map((_, index) => {
-        return (index % 2 === 0) ? `day ${index / 2 + 1}` : '';
+        return (index % 2 === 0) ? `day ${index / 2 - 6}` : '';
       });
+
+      const pointColors = astronaut_Extras_Data[i][key].map((_, index) => index > astronaut_Extras_Data[i][key].length - 3 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)');
+      const BKpointColors = astronaut_Extras_Data[i][key].map((_, index) => index > astronaut_Extras_Data[i][key].length - 3 ? 'rgba(255,0,0,0.2)' : astronaut_dict_color[i] + '0.2)');
 
       astronaut_Extras_Chartdata[i].push({
         labels: dayLabels,
@@ -207,8 +226,12 @@ function processExtrasData(healthData) {
           label: key.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase()) + " 1-10",
           data: astronaut_Extras_Data[i][key],
           borderWidth: 1,
-          borderColor: astronaut_dict_color[i] + '1)',
-          backgroundColor: astronaut_dict_color[i] + '0.2)',
+          borderColor: pointColors,
+          backgroundColor: BKpointColors,
+          pointBackgroundColor: BKpointColors,
+          segment: {
+            borderColor: (ctx) => ctx.p0DataIndex >= astronaut_Extras_Data[i][key].length - 2 ? 'rgba(255,0,0,1)' : astronaut_dict_color[i] + '1)',
+          }
         }]
       });
     }
@@ -220,11 +243,20 @@ function processExtrasData(healthData) {
 
 export default function App() {
 
-  // let the max number of days be 7, and cut off the start of the data if it is longer than 7 days
-  let max = 8;
-  if (healthData.length > max) {
-    healthData = healthData.slice(healthData.length - max, healthData.length);
+  // retrieve the health data from the json file to ensure that the data is up to date
+  const newHealthData = require("./testing_data.json");
+
+  if (newHealthData.length !== healthData.length) {
+    healthData = newHealthData;
   }
+
+  // let the max number of days be 7, and cut off the start of the data if it is longer than 7 days
+  let max = 7;
+  if (healthData.length > max)
+    healthData = healthData.slice(healthData.length - max, healthData.length);
+
+  // append the last prediction to the health data
+  healthData.push(predictions[predictions.length - 1]);
 
   const [formParams, setFormParams] = useState({
     astronaut: '',
@@ -233,7 +265,7 @@ export default function App() {
   const handleButtonClick = (astronaut) => {
     setFormParams({ astronaut });
   }
-
+  
   // Temp data to fill graphs with to test how visuals look
   const labels = ['5', '4', '3', '2', '1', '0'];
   const tempdata = {
