@@ -1,6 +1,9 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'data')))
 from typing import List
 from data import Metrics
-import generate
+import generator.generate as generate
 import matplotlib.pyplot as plt
 import numpy as np
 

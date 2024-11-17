@@ -82,12 +82,72 @@ class AstronautMetrics:
         ret.concentration_evening = 1.
         return ret
     
+    @staticmethod
+    def from_vector(raw: List[float]) -> AstronautMetrics:
+        metrics = AstronautMetrics.default()
+        metrics.heartrate_bpm = raw[:360]
+        metrics.previous_night_awake_minutes = raw[360]
+        metrics.previous_night_rem_minutes = raw[361]
+        metrics.previous_night_light_minutes = raw[362]
+        metrics.previous_night_deep_minutes = raw[363]
+        metrics.meal_1_breakfast = raw[364]
+        metrics.meal_2_breakfast = raw[365]
+        metrics.meal_3_breakfast = raw[366]
+        metrics.meal_1_lunch = raw[367]
+        metrics.meal_2_lunch = raw[368]
+        metrics.meal_3_lunch = raw[369]
+        metrics.meal_1_dinner = raw[370]
+        metrics.meal_2_dinner = raw[371]
+        metrics.meal_3_dinner = raw[372]
+        metrics.frustration_morning = raw[373]
+        metrics.stomach_ache_morning = raw[374]
+        metrics.anxiety_morning = raw[375]
+        metrics.headache_morning = raw[376]
+        metrics.diarrhea_morning = raw[377]
+        metrics.sneezing_morning = raw[378]
+        metrics.concentration_morning = raw[379]
+        metrics.frustration_evening = raw[380]
+        metrics.stomach_ache_evening = raw[381]
+        metrics.anxiety_evening = raw[382]
+        metrics.headache_evening = raw[383]
+        metrics.diarrhea_evening = raw[384]
+        metrics.sneezing_evening = raw[385]
+        metrics.concentration_evening = raw[386]
+        return metrics
+    
     def to_vector(self) -> List[float]:
-        out: List[float | List[float]] = list(vars(self).values())
-        heart: List[float] = out.pop(0) #type: ignore
-        out.extend(heart)
-
-        return out #type: ignore
+        return (
+            self.heartrate_bpm +
+            [
+            self.previous_night_awake_minutes,
+            self.previous_night_rem_minutes,
+            self.previous_night_light_minutes,
+            self.previous_night_deep_minutes,
+            self.meal_1_breakfast,
+            self.meal_2_breakfast,
+            self.meal_3_breakfast,
+            self.meal_1_lunch,
+            self.meal_2_lunch,
+            self.meal_3_lunch,
+            self.meal_1_dinner,
+            self.meal_2_dinner,
+            self.meal_3_dinner,
+            self.frustration_morning,
+            self.stomach_ache_morning,
+            self.anxiety_morning,
+            self.headache_morning,
+            self.diarrhea_morning,
+            self.sneezing_morning,
+            self.concentration_morning,
+            self.frustration_evening,
+            self.stomach_ache_evening,
+            self.anxiety_evening,
+            self.headache_evening,
+            self.diarrhea_evening,
+            self.sneezing_evening,
+            self.concentration_evening
+            ]
+        )
 
 
 @dataclass
@@ -114,6 +174,15 @@ class Metrics:
         out.extend(self.astronaut4.to_vector())
         
         return out
+    
+    @staticmethod
+    def from_vector(raw: List[float]) -> Metrics:
+        return Metrics(
+            AstronautMetrics.from_vector(raw[0*387:1*387]),
+            AstronautMetrics.from_vector(raw[1*387:2*387]),
+            AstronautMetrics.from_vector(raw[2*387:3*387]),
+            AstronautMetrics.from_vector(raw[3*387:4*387])
+        )
     
     def to_dict(self) -> Dict[str, Any]:
         return dataclasses.asdict(self)

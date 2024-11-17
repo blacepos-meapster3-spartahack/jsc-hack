@@ -1,6 +1,6 @@
-"""
-
-"""
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
 from typing import Any, Callable, List
 from data import AstronautMetrics, Metrics
 from perlin_noise import PerlinNoise
@@ -213,6 +213,22 @@ def person_1_gen(history: List[Metrics], metrics: Metrics):
     if has_condition_prior(history, 2, lambda x: x.astronaut2.sneezing_evening):
         metrics.astronaut1.sneezing_morning = 1.0
 
+    if poor_rem_2_days_consec(history, lambda x: x.astronaut1):
+        metrics.astronaut1.concentration_morning = 0.2
+        metrics.astronaut1.concentration_evening = 0.1
+        metrics.astronaut1.headache_morning = 0.8
+        metrics.astronaut1.headache_evening = 0.8
+    
+    if poor_deep_2_days_consec(history, lambda x: x.astronaut1):
+        metrics.astronaut1.headache_morning = 0.8
+        metrics.astronaut1.headache_evening = 0.8
+        metrics.astronaut1.sneezing_morning = 0.8
+        metrics.astronaut1.sneezing_evening = 0.8
+
+    if random.randint(0,2) == 0:
+        # this will also trigger negative consequences due to sleep if it occurs 2 consecutive days
+        metrics.astronaut1.anxiety_evening = 0.6
+
 
 def person_2_gen(history: List[Metrics], metrics: Metrics):
     # add this percent of person 1's heartrate to person 2
@@ -260,6 +276,18 @@ def person_2_gen(history: List[Metrics], metrics: Metrics):
        has_condition_prior(history, 2, lambda x: x.astronaut3.frustration_morning):
         metrics.astronaut2.frustration_morning = 1.0
         metrics.astronaut2.frustration_evening = 1.0
+    
+    if poor_rem_2_days_consec(history, lambda x: x.astronaut2):
+        metrics.astronaut2.concentration_morning = 0.2
+        metrics.astronaut2.concentration_evening = 0.1
+        metrics.astronaut2.headache_morning = 0.8
+        metrics.astronaut2.headache_evening = 0.8
+    
+    if poor_deep_2_days_consec(history, lambda x: x.astronaut2):
+        metrics.astronaut2.headache_morning = 0.8
+        metrics.astronaut2.headache_evening = 0.8
+        metrics.astronaut2.sneezing_morning = 0.8
+        metrics.astronaut2.sneezing_evening = 0.8
 
 
 def person_3_gen(history: List[Metrics], metrics: Metrics):
@@ -292,6 +320,18 @@ def person_3_gen(history: List[Metrics], metrics: Metrics):
     if ate_food_prior(history, 4, lambda x: x.astronaut3.meal_2_lunch):
         metrics.astronaut3.concentration_morning = 0.0
         metrics.astronaut3.concentration_evening = 0.0
+    
+    if poor_rem_2_days_consec(history, lambda x: x.astronaut3):
+        metrics.astronaut3.concentration_morning = 0.2
+        metrics.astronaut3.concentration_evening = 0.1
+        metrics.astronaut3.headache_morning = 0.8
+        metrics.astronaut3.headache_evening = 0.8
+    
+    if poor_deep_2_days_consec(history, lambda x: x.astronaut3):
+        metrics.astronaut3.headache_morning = 0.8
+        metrics.astronaut3.headache_evening = 0.8
+        metrics.astronaut3.sneezing_morning = 0.8
+        metrics.astronaut3.sneezing_evening = 0.8
 
 
 def person_4_gen(history: List[Metrics], metrics: Metrics):
@@ -323,6 +363,18 @@ def person_4_gen(history: List[Metrics], metrics: Metrics):
        ate_food_prior(history, 1, lambda x: x.astronaut4.meal_1_dinner):
         metrics.astronaut4.stomach_ache_morning = 0.2
         metrics.astronaut4.stomach_ache_evening = 0.1
+    
+    if poor_rem_2_days_consec(history, lambda x: x.astronaut4):
+        metrics.astronaut4.concentration_morning = 0.2
+        metrics.astronaut4.concentration_evening = 0.1
+        metrics.astronaut4.headache_morning = 0.8
+        metrics.astronaut4.headache_evening = 0.8
+    
+    if poor_deep_2_days_consec(history, lambda x: x.astronaut4):
+        metrics.astronaut4.headache_morning = 0.8
+        metrics.astronaut4.headache_evening = 0.8
+        metrics.astronaut4.sneezing_morning = 0.8
+        metrics.astronaut4.sneezing_evening = 0.8
 
 
 def gen_from_history(history: List[Metrics]) -> Metrics:
