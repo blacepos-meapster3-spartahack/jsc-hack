@@ -2,6 +2,11 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 
 const Other = ({ data, text }) => {
+    // clamp the data to a minimum of 0
+    for (let i = 0; i < data.datasets[0].data.length; i++) {
+        data.datasets[0].data[i] = Math.max(data.datasets[0].data[i], 0);
+    }
+
     return (
         <Line options={
         {
@@ -19,7 +24,7 @@ const Other = ({ data, text }) => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 10
+                    max: 10,
                 },
             }
         }} data={data} />

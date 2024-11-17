@@ -5,9 +5,9 @@ import Navbar from 'react-bootstrap/Navbar';
 function Header() {
     return (
       <Navbar bg="dark" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand>Predictive Astronaut Health Metrics</Navbar.Brand>
-        </Container>
+      <Container>
+        <Navbar.Brand href="/">Predictive Astronaut Health Metrics</Navbar.Brand>
+      </Container>
       </Navbar>
     );
   }

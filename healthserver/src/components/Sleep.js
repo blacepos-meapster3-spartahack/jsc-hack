@@ -3,8 +3,7 @@ import { Line } from 'react-chartjs-2';
 
 const Sleep = ({ data, text }) => {
     return (
-        <Line options={
-        {
+        <Line options={{
             responsive: true,
             aspectRatio: 1.5, // Adjust this value to change the aspect ratio
             plugins: {
@@ -13,9 +12,16 @@ const Sleep = ({ data, text }) => {
                 },
                 title: {
                     display: true,
-                    text: text,
+                    text: "",
                 },
             },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    suggestedMin: text.includes('Light') ? 320 : 60,
+                    suggestedMax: text.includes('Light') ? 400 : 180
+                }
+            }
         }} data={data} />
     );
 };

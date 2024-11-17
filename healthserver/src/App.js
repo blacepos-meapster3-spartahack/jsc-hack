@@ -243,6 +243,16 @@ function processExtrasData(healthData) {
 
 export default function App() {
 
+  // get the day difference from the url parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const dayDifference = parseInt(urlParams.get('day')) || 0;
+
+  // if the day difference is positive, set it to 0
+  if (dayDifference > 0) {
+    window.location.search = "?day=0";
+    dayDifference = 0;
+  }
+
   // retrieve the health data from the json file to ensure that the data is up to date
   const newHealthData = require("./testing_data.json");
 
@@ -253,10 +263,10 @@ export default function App() {
   // let the max number of days be 7, and cut off the start of the data if it is longer than 7 days
   let max = 7;
   if (healthData.length > max)
-    healthData = healthData.slice(healthData.length - max, healthData.length);
+    healthData = healthData.slice(healthData.length - max + dayDifference, healthData.length + dayDifference);
 
   // append the last prediction to the health data
-  healthData.push(predictions[predictions.length - 1]);
+  healthData.push(predictions[predictions.length - 1 + dayDifference]);
 
   const [formParams, setFormParams] = useState({
     astronaut: '',
@@ -264,6 +274,25 @@ export default function App() {
 
   const handleButtonClick = (astronaut) => {
     setFormParams({ astronaut });
+  }
+
+  const handlePageChange = (pageDiff) => {
+    /*healthData = newHealthData;
+    setDayDifference(dayDifference + pageDiff);
+    console.log("Page difference: ", dayDifference);
+    if (dayDifference < 0) {
+      healthData = newHealthData.slice(newHealthData.length - 7 + dayDifference, newHealthData.length + dayDifference);
+    } else if (dayDifference > 0 && newHealthData.length > 7 + dayDifference) {
+      healthData = newHealthData.slice(newHealthData.length - 7 - dayDifference, newHealthData.length - dayDifference);
+    } else {
+      healthData = newHealthData.slice(newHealthData.length - 7, newHealthData.length);
+    }
+
+    // append the last prediction to the health data. Include the difference in the index
+    healthData.push(predictions[predictions.length - 1 + dayDifference]);*/
+
+    // set the url parameters to the page difference
+    window.location.search = `?day=${pageDiff + dayDifference}`;
   }
   
   // Temp data to fill graphs with to test how visuals look
@@ -298,6 +327,7 @@ export default function App() {
   return (
     <div>
       <Header />
+      {/* Heartbeat Charts */}
       <div className="container-fluid">
         <div className="row" style={{ minHeight: '200px' }}>
           <div className="col-md-3 chart-container">
@@ -312,6 +342,7 @@ export default function App() {
           <div className="col-md-3 chart-container">
             <Heartbeat data={astronaut_Heartbeats_Chartdata[3]} text={""} />
           </div>
+          {/* Food Tables */}
           <div className="col-md-3">
             <FoodTable astronautFoodData={astronaut_Food_Data[0]} headerNumber={1} />
           </div>
@@ -327,21 +358,25 @@ export default function App() {
         </div>
         
       </div>
+      {/* Buttons */}
       <hr style={{ border: '2px solid black', margin: '20px 0' }} />
       <div className="button-container" style={{ textAlign: 'center', margin: '20px 0' }}>
+        <button className="btn btn-outline-dark" style={{ position: 'absolute', left: '10px' }} onClick={() => handlePageChange(-1)}>&larr;</button>
         <button className="btn btn-outline-dark" style={{ margin: '0 0.1%' }} onClick={() => handleButtonClick(1)}>1</button>
         <button className="btn btn-outline-dark" style={{ margin: '0 0.1%' }} onClick={() => handleButtonClick(2)}>2</button>
         <button className="btn btn-outline-dark" style={{ margin: '0 0.1%' }} onClick={() => handleButtonClick(3)}>3</button>
         <button className="btn btn-outline-dark" style={{ margin: '0 0.1%' }} onClick={() => handleButtonClick(4)}>4</button>
+        <button className="btn btn-outline-dark" style={{ position: 'absolute', right: '10px' }} onClick={() => handlePageChange(1)}>&rarr;</button>
       </div>
       <div className="text-box" style={{ textAlign: 'center', margin: '20px 0' }}>
         <input type="text" value={"Astronaut " + formParams.astronaut + ":"} readOnly className="form-control text-center" />
       </div>
+      {/* Sleep Charts */}
       <div className="container-fluid">
         {formParams.astronaut && astronaut_Sleep_Chartdata[parseInt(formParams.astronaut) - 1] && (
           <div className="row justify-content-center" style={{ minHeight: '200px' }}>
             <div className="col-md-3 chart-container">
-              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][1]} text={""} />
+              <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][1]} text={"Light"} />
             </div>
             <div className="col-md-3 chart-container">
               <Sleep data={astronaut_Sleep_Chartdata[parseInt(formParams.astronaut-1)][2]} text={""} />
@@ -351,6 +386,7 @@ export default function App() {
             </div>
           </div>
         )}
+        {/* Etc. Charts */}
         {formParams.astronaut && astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1] && (
           <div className="row justify-content-center" style={{ minHeight: '200px' }}>
             {astronaut_Extras_Chartdata[parseInt(formParams.astronaut) - 1].map((data, index) => (
