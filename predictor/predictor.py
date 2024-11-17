@@ -54,6 +54,18 @@ class HealthMetricsDataset(Dataset):
         return torch.tensor(input_seq, dtype=torch.float32), torch.tensor(target_token, dtype=torch.float32)
 
 
+# Define weights for each feature
+weights = torch.tensor(
+    [1./360] * 360 + [1.0] * 4 + [0.0] * 9 + [1.0] * 14 + 
+    [1./360] * 360 + [1.0] * 4 + [0.0] * 9 + [1.0] * 14 + 
+    [1./360] * 360 + [1.0] * 4 + [0.0] * 9 + [1.0] * 14 + 
+    [1./360] * 360 + [1.0] * 4 + [0.0] * 9 + [1.0] * 14).to(device)
+
+# Weighted MSE loss
+def weighted_mse_loss(prediction, target):
+    loss = (weights * (prediction - target) ** 2).mean()
+    return loss
+
 def run():
     model = TransformerModel().to(device)
     loss_fn = nn.MSELoss()  # Predicting continuous values
@@ -73,7 +85,7 @@ def run():
         for src, tgt in dataloader:
             optimizer.zero_grad()
             output = model(src)  # Shape: (batch_size, seq_length, input_dim)
-            loss = loss_fn(output[:, -1, :], tgt)  # Only compare the final prediction with the target
+            loss = weighted_mse_loss(output[:, -1, :], tgt)  # Only compare the final prediction with the target
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
