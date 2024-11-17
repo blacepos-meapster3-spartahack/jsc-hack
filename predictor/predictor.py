@@ -56,8 +56,12 @@ model = TransformerModel().to(device)
 loss_fn = nn.MSELoss()  # Predicting continuous values
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
+print("generating training data")
+data_amount = 10000
 data = [generate.gen_initial()]
-for i in range(9999):
+for i in range(data_amount-1): # -1 because first day is from gen_initial
+    if i % (data_amount//100) == 0:
+        print("{}%".format(i // (data_amount//100)))
     data.append(generate.gen_from_history(data))
 
 print("data generated")
@@ -70,7 +74,7 @@ dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 print("training")
 
-epochs = 10
+epochs = 6
 for epoch in range(epochs):
     model.train()
     total_loss = 0
@@ -84,3 +88,16 @@ for epoch in range(epochs):
     print(f"Epoch {epoch+1}, Loss: {total_loss / len(dataloader)}")
 
 torch.save(model.state_dict(), 'health_transformer.pth')
+
+
+print("generate testing data")
+data_amount = 1000
+data = [generate.gen_initial()]
+for i in range(data_amount-1): # -1 because first day is from gen_initial
+    if i % (data_amount//100) == 0:
+        print("{}%".format(i // (data_amount//100)))
+    data.append(generate.gen_from_history(data))
+
+print("data generated")
+data = [d.to_vector() for d in data]
+

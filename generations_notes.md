@@ -3,6 +3,7 @@ astronauts:
     - normal noisy heartrate
     - fine with any meal
     - when #2 experiences sneezing 2 days prior, they experience sneezing
+    - reports anxiety ~33% of days
 2. a
     - heartrate correlates with #1 by 0.8
     - when #3 eats meal 2 for breakfast, they receive a 0.8 for stomach_ache_morning the next day
