@@ -1,6 +1,6 @@
-"""
-
-"""
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../data')))
 from typing import Any, Callable, List
 from data import AstronautMetrics, Metrics
 from perlin_noise import PerlinNoise

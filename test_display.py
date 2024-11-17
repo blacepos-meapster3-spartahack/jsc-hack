@@ -1,6 +1,6 @@
 from typing import List
-from data import Metrics
-import generate
+from data.data import Metrics
+import generator.generate as generate
 import matplotlib.pyplot as plt
 import numpy as np
 
